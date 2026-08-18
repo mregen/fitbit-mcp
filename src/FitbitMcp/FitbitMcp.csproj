@@ -5,6 +5,13 @@
     <UserSecretsId>7e2f6b3a-4c9d-4b1e-9a8f-3d6c5e1a2f70</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>fitbit-mcp</ToolCommandName>
+    <PackageId>FitbitMcp</PackageId>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="ModelContextProtocol.AspNetCore" />
   </ItemGroup>
