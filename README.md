@@ -4,7 +4,7 @@ A .NET-based Model Context Protocol (MCP) server for the [Google Health API](htt
 
 ## Status
 
-Early scaffolding. `get_weight_history` is implemented and its OAuth scope + `dataPoints:rollUp` request/response shape are confirmed against the live [discovery doc](https://health.googleapis.com/$discovery/rest?version=v4) — an initial guess (a `health.rollup` scope, Google-Fit-style bucket/dataset/point response) turned out to be entirely wrong and was caught live via an `invalid_scope` error during the OAuth consent screen; both are now fixed. Still not exercised against a real authenticated response, though. See [open issues](https://github.com/mregen/fitbit-mcp/issues) for the current roadmap.
+Working prototype. `get_weight_history` is verified end to end against a real Google Health account. Compared against [fatsecret-mcp](../fatsecret-mcp) for a real month: most weight entries were missing from FatSecret, and backfilling them failed — not due to a bug here, but because FatSecret's `weight.update` API rejects any date more than 2 days in the past (undocumented, discovered live). **Practical implication**: this can sync weight going forward (run every day or two) but cannot backfill historical gaps — those need manual entry in FatSecret's own app. See [open issues](https://github.com/mregen/fitbit-mcp/issues) for what's left.
 
 ## Available tools
 
