@@ -2,37 +2,45 @@
 
 using FitbitMcp.Auth;
 
-var builder = WebApplication.CreateBuilder(args);
-
 if (args.Length > 0 && args[0] == "auth")
 {
-    await AuthCli.RunAsync(args[1..], builder.Configuration);
+    var authBuilder = Host.CreateApplicationBuilder(args);
+    authBuilder.Configuration.AddUserSecrets<Program>();
+    await AuthCli.RunAsync(args[1..], authBuilder.Configuration);
     return;
 }
 
-builder.Services.AddHttpClient();
-builder.Services.AddSingleton(sp => {
-    var config = sp.GetRequiredService<IConfiguration>();
-    var clientId = config["GoogleHealth:ClientId"]
-        ?? throw new InvalidOperationException("GoogleHealth:ClientId is not configured.");
-    var clientSecret = config["GoogleHealth:ClientSecret"]
-        ?? throw new InvalidOperationException("GoogleHealth:ClientSecret is not configured.");
-    var httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(GoogleHealthOAuth2Client));
-    return new GoogleHealthOAuth2Client(httpClient, clientId, clientSecret);
-});
-builder.Services.AddSingleton<TokenStore>();
-builder.Services.AddSingleton(sp => {
-    var httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient(nameof(GoogleHealthApi));
-    return new GoogleHealthApi(httpClient, sp.GetRequiredService<GoogleHealthOAuth2Client>(), sp.GetRequiredService<TokenStore>());
-});
+var useHttp = args.Contains("--http");
+var remainingArgs = args.Where(a => a != "--http").ToArray();
 
-builder.Services
-    .AddMcpServer()
-    .WithHttpTransport()
-    .WithToolsFromAssembly();
+if (useHttp)
+{
+    var builder = WebApplication.CreateBuilder(remainingArgs);
+    builder.Configuration.AddUserSecrets<Program>();
+    builder.Services.AddGoogleHealthClients();
+    builder.Services
+        .AddMcpServer()
+        .WithHttpTransport()
+        .WithToolsFromAssembly();
 
-var app = builder.Build();
+    var app = builder.Build();
+    app.MapMcp("/mcp");
+    app.Run();
+}
+else
+{
+    var builder = Host.CreateApplicationBuilder(remainingArgs);
+    builder.Configuration.AddUserSecrets<Program>();
 
-app.MapMcp("/mcp");
+    // Stdio is the JSON-RPC channel - any stray console log line on stdout would corrupt it.
+    builder.Logging.ClearProviders();
+    builder.Logging.AddConsole(options => options.LogToStandardErrorThreshold = LogLevel.Trace);
 
-app.Run();
+    builder.Services.AddGoogleHealthClients();
+    builder.Services
+        .AddMcpServer()
+        .WithStdioServerTransport()
+        .WithToolsFromAssembly();
+
+    await builder.Build().RunAsync();
+}
