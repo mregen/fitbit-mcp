@@ -29,70 +29,36 @@ public class WeightTools(GoogleHealthApi api)
     }
 
     /// <summary>
-    /// Best-effort parse of the dataPoints:rollUp response into flat entries. Google Health API v4's
-    /// exact bucket/dataset/point/value shape hasn't been exercised against a live account yet -
-    /// adjust the property names below if they don't match what the real API returns.
+    /// Parses a RollUpDataPointsResponse (https://health.googleapis.com/$discovery/rest?version=v4) into
+    /// flat entries: rollupDataPoints[].startTime + rollupDataPoints[].weight.weightGramsAvg, converted
+    /// from grams to kilograms. Confirmed against the live discovery document; not yet exercised against
+    /// a real authenticated response.
     /// </summary>
     internal static List<WeightEntry> ParseEntries(string rawJson)
     {
         var entries = new List<WeightEntry>();
         using var document = JsonDocument.Parse(rawJson);
 
-        if (!document.RootElement.TryGetProperty("bucket", out var buckets))
+        if (!document.RootElement.TryGetProperty("rollupDataPoints", out var rollupDataPoints))
         {
             return entries;
         }
 
-        foreach (var bucket in buckets.EnumerateArray())
+        foreach (var dataPoint in rollupDataPoints.EnumerateArray())
         {
-            if (!bucket.TryGetProperty("startTime", out var startTimeElement)
+            if (!dataPoint.TryGetProperty("startTime", out var startTimeElement)
                 || !DateTimeOffset.TryParse(startTimeElement.GetString(), CultureInfo.InvariantCulture, DateTimeStyles.None, out var startTime)
-                || !bucket.TryGetProperty("dataset", out var datasets))
+                || !dataPoint.TryGetProperty("weight", out var weight)
+                || !weight.TryGetProperty("weightGramsAvg", out var weightGramsAvg))
             {
                 continue;
             }
 
-            foreach (var dataset in datasets.EnumerateArray())
-            {
-                if (!dataset.TryGetProperty("point", out var points))
-                {
-                    continue;
-                }
-
-                foreach (var point in points.EnumerateArray())
-                {
-                    var weightKg = TryReadWeightKg(point);
-                    if (weightKg is not null)
-                    {
-                        var isoDate = DateOnly.FromDateTime(startTime.UtcDateTime).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-                        entries.Add(new WeightEntry(isoDate, weightKg.Value));
-                    }
-                }
-            }
+            var isoDate = DateOnly.FromDateTime(startTime.UtcDateTime).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            entries.Add(new WeightEntry(isoDate, weightGramsAvg.GetDouble() / 1000));
         }
 
         return entries;
-    }
-
-    private static double? TryReadWeightKg(JsonElement point)
-    {
-        if (!point.TryGetProperty("value", out var values) || values.GetArrayLength() == 0)
-        {
-            return null;
-        }
-
-        var value = values[0];
-        if (value.TryGetProperty("fpVal", out var fpVal))
-        {
-            return fpVal.GetDouble();
-        }
-
-        if (value.TryGetProperty("floatValue", out var floatValue))
-        {
-            return floatValue.GetDouble();
-        }
-
-        return null;
     }
 }
 

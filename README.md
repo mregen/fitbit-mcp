@@ -4,7 +4,7 @@ A .NET-based Model Context Protocol (MCP) server for the [Google Health API](htt
 
 ## Status
 
-Early scaffolding. `get_weight_history` is implemented but not yet exercised against a live Google account — verify the `dataPoints:rollUp` request/response shape against the [discovery doc](https://health.googleapis.com/$discovery/rest?version=v4) before relying on it. See [open issues](https://github.com/mregen/fitbit-mcp/issues) for the current roadmap.
+Early scaffolding. `get_weight_history` is implemented and its OAuth scope + `dataPoints:rollUp` request/response shape are confirmed against the live [discovery doc](https://health.googleapis.com/$discovery/rest?version=v4) — an initial guess (a `health.rollup` scope, Google-Fit-style bucket/dataset/point response) turned out to be entirely wrong and was caught live via an `invalid_scope` error during the OAuth consent screen; both are now fixed. Still not exercised against a real authenticated response, though. See [open issues](https://github.com/mregen/fitbit-mcp/issues) for the current roadmap.
 
 ## Available tools
 

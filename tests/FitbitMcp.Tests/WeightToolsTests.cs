@@ -8,22 +8,20 @@ namespace FitbitMcp.Tests;
 public class WeightToolsTests
 {
     [Test]
-    public void ParseEntries_FlattensBucketDatasetPointValue_ToWeightEntries()
+    public void ParseEntries_FlattensRollupDataPoints_ToWeightEntries()
     {
         const string rawJson = """
         {
-          "bucket": [
+          "rollupDataPoints": [
             {
               "startTime": "2026-08-01T00:00:00Z",
-              "dataset": [
-                { "point": [ { "value": [ { "fpVal": 82.3 } ] } ] }
-              ]
+              "endTime": "2026-08-02T00:00:00Z",
+              "weight": { "weightGramsAvg": 82300.0 }
             },
             {
               "startTime": "2026-08-02T00:00:00Z",
-              "dataset": [
-                { "point": [ { "value": [ { "fpVal": 82.1 } ] } ] }
-              ]
+              "endTime": "2026-08-03T00:00:00Z",
+              "weight": { "weightGramsAvg": 82100.0 }
             }
           ]
         }
@@ -37,9 +35,11 @@ public class WeightToolsTests
     }
 
     [Test]
-    public void ParseEntries_SkipsBucketsWithoutPoints()
+    public void ParseEntries_SkipsWindowsWithoutWeight()
     {
-        const string rawJson = """{ "bucket": [ { "startTime": "2026-08-01T00:00:00Z", "dataset": [ { "point": [] } ] } ] }""";
+        const string rawJson = """
+        { "rollupDataPoints": [ { "startTime": "2026-08-01T00:00:00Z", "endTime": "2026-08-02T00:00:00Z" } ] }
+        """;
 
         var entries = WeightTools.ParseEntries(rawJson);
 
@@ -47,7 +47,7 @@ public class WeightToolsTests
     }
 
     [Test]
-    public void ParseEntries_ReturnsEmptyList_WhenNoBucketProperty()
+    public void ParseEntries_ReturnsEmptyList_WhenNoRollupDataPointsProperty()
     {
         var entries = WeightTools.ParseEntries("{}");
 
