@@ -39,6 +39,7 @@ Working prototype, verified against a real account.
 | Activity (steps, calories, active minutes) | ✅ Working, verified live |
 | Heart rate | ✅ Working, verified live |
 | Sleep | ✅ Working, verified live - naps and main sleep on the same night aren't distinguished yet ([issue #17](https://github.com/mregen/fitbit-mcp/issues/17)) |
+| Body fat percentage | ✅ Working, verified live |
 | Syncing weight into FatSecret | ⚠️ Works only for recent gaps (last ~2 days) - FatSecret's own API refuses to backdate further, discovered live, not something this project can work around |
 | Legacy Fitbit Web API (as an alternative to Google Health) | ⏳ Not built - Google Health already covers the same data |
 | Hosting for more than one person | ⏳ Design sketch only - see [`docs/cloud-deployment.md`](docs/cloud-deployment.md) |
@@ -62,6 +63,7 @@ that's needed first and the reasoning behind deferring hosted/multi-user use.
 | `get_activity_summary` | `activity_and_fitness.readonly` | Daily steps, calories, and active minutes for a date range (last 14 days by default) |
 | `get_heart_rate_history` | `activity_and_fitness.readonly` | Daily average/min/max heart rate for a date range (last 14 days by default) |
 | `get_sleep_history` | `sleep.readonly` | Sleep sessions for a month - time asleep, awake, and in bed |
+| `get_body_fat_history` | `health_metrics_and_measurements.readonly` | Body-fat percentage entries for a month (same scope as weight) |
 
 ## Install
 
