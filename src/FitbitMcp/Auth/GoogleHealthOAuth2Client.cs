@@ -15,7 +15,10 @@ public sealed class GoogleHealthOAuth2Client(HttpClient httpClient, string clien
     private const string AuthorizeUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     private const string TokenUrl = "https://oauth2.googleapis.com/token";
     public const string RedirectUri = "http://127.0.0.1:3000/callback";
-    public const string Scope = "https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly";
+    public const string Scope =
+        "https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly " +
+        "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly " +
+        "https://www.googleapis.com/auth/googlehealth.sleep.readonly";
 
     public string BuildAuthorizeUrl(string state, string codeChallenge)
     {

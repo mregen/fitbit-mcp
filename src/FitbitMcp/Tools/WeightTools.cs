@@ -24,7 +24,7 @@ public class WeightTools(GoogleHealthApi api)
         var start = new DateOnly(anyDayInMonth.Year, anyDayInMonth.Month, 1);
         var end = start.AddMonths(1).AddDays(-1);
 
-        var rawJson = await api.GetWeightRollupAsync(start, end, cancellationToken);
+        var rawJson = await api.GetRollupAsync("weight", start, end, cancellationToken);
         return JsonSerializer.Serialize(ParseEntries(rawJson));
     }
 
