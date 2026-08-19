@@ -79,6 +79,17 @@ Earlier status entries above described this project's origin partly in terms of 
 - **What changed**: the README's Purpose section, Status table, and top-line description no longer mention FatSecret or any sync feature; the "driving use case" in this file's Project section is now Google Health data access on its own terms. `WeightTools.GetWeightHistory`'s tool description and the top-line README description no longer name the Aria scale model specifically (it's not sold anymore and may be EOL) — Google Health, not a specific Fitbit device, is the only real dependency. `AuthCli`'s doc comment no longer compares Google's OAuth flow to FatSecret's OAuth1 flow.
 - **What didn't change**: the underlying auth/data-fetching code is untouched — this was a docs-and-framing pass, not a functional one. All tests still pass; no tool signatures changed.
 
+## Status update, 2026-08-19 (continued once more) - distance and active zone minutes added to `get_activity_summary`
+
+Extended the existing tool rather than adding a new one, since both fields are daily-rollup shaped like steps/calories/active-minutes:
+
+- **Two more parallel rollup calls**: `distance` (`DistanceRollupValue.millimetersSum`, converted mm → km) and `active-zone-minutes` (`ActiveZoneMinutesRollupValue`'s peak/fat-burn/cardio breakdown, summed into one daily total - same "flatten the breakdown" approach already used for `active-minutes`). Confirmed via the live discovery doc that both fall under the same `activity_and_fitness.readonly` scope already granted - no re-auth needed.
+- `ActivityTools.MergeEntries` now takes five JSON payloads instead of three and the `ActivityDay` record gained `DistanceKm`/`ActiveZoneMinutes` fields; `GetActivitySummary` fires all five rollup calls with `Task.WhenAll` as before.
+- 1 test updated (still 17 total, no net-new test count change): `ActivityToolsTests` now asserts on all five merged fields in one case, plus a five-empty-input case.
+- **Verified live** the same way as the body-fat addition (standalone stdio script against the source build, bypassing the installed nuget package which doesn't have this yet): real 14-day pull returned correctly parsed `DistanceKm` (2.5–10.6 km/day) and `ActiveZoneMinutes` (4–232 min/day) alongside the existing fields, confirmed reliable across three consecutive runs (one earlier single run failed with the generic `get_activity_summary` error this endpoint has shown before - not reproducible on retry, so treated as a one-off rather than a regression).
+- **Not yet in a published package**: same as body-fat - only exists in source until the next nuget.org release.
+- **Still on the table, not built this pass**: floors climbed, active energy burned (distinct from total calories), sedentary period, calories-in-heart-rate-zone, and - a structurally bigger piece - individual exercise/workout sessions (Google Health's `exercise` data type, session-shaped like sleep rather than rollup-shaped, so it'd need a new `ListDataPointsAsync`-based tool rather than another field on this one).
+
 ## Next steps (pick up here)
 
 See GitHub Issues on [mregen/fitbit-mcp](https://github.com/mregen/fitbit-mcp/issues) for the full, current task list.

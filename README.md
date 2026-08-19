@@ -34,7 +34,7 @@ Working prototype, verified against a real account.
 | Feature | Status |
 |---|---|
 | Weight history | ✅ Working, verified live |
-| Activity (steps, calories, active minutes) | ✅ Working, verified live |
+| Activity (steps, calories, active minutes, distance, active zone minutes) | ✅ Working, verified live |
 | Heart rate | ✅ Working, verified live |
 | Sleep | ✅ Working, verified live - naps and main sleep on the same night aren't distinguished yet ([issue #17](https://github.com/mregen/fitbit-mcp/issues/17)) |
 | Body fat percentage | ✅ Working, verified live |
@@ -57,7 +57,7 @@ that's needed first and the reasoning behind deferring hosted/multi-user use.
 | Tool | Auth needed | Notes |
 |---|---|---|
 | `get_weight_history` | `health_metrics_and_measurements.readonly` | Body-weight entries for a month |
-| `get_activity_summary` | `activity_and_fitness.readonly` | Daily steps, calories, and active minutes for a date range (last 14 days by default) |
+| `get_activity_summary` | `activity_and_fitness.readonly` | Daily steps, calories, active minutes, distance, and active zone minutes for a date range (last 14 days by default) |
 | `get_heart_rate_history` | `activity_and_fitness.readonly` | Daily average/min/max heart rate for a date range (last 14 days by default) |
 | `get_sleep_history` | `sleep.readonly` | Sleep sessions for a month - time asleep, awake, and in bed |
 | `get_body_fat_history` | `health_metrics_and_measurements.readonly` | Body-fat percentage entries for a month (same scope as weight) |

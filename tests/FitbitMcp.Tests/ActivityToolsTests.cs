@@ -8,7 +8,7 @@ namespace FitbitMcp.Tests;
 public class ActivityToolsTests
 {
     [Test]
-    public void MergeEntries_CombinesStepsCaloriesAndActiveMinutes_ByDate()
+    public void MergeEntries_CombinesStepsCaloriesActiveMinutesDistanceAndActiveZoneMinutes_ByDate()
     {
         const string stepsJson = """
         { "rollupDataPoints": [
@@ -30,18 +30,30 @@ public class ActivityToolsTests
             ] } }
         ] }
         """;
+        const string distanceJson = """
+        { "rollupDataPoints": [
+            { "startTime": "2026-08-01T00:00:00Z", "distance": { "millimetersSum": "6200000" } }
+        ] }
+        """;
+        const string activeZoneMinutesJson = """
+        { "rollupDataPoints": [
+            { "startTime": "2026-08-01T00:00:00Z", "activeZoneMinutes": {
+                "sumInPeakHeartZone": "5", "sumInFatBurnHeartZone": "20", "sumInCardioHeartZone": "10"
+            } }
+        ] }
+        """;
 
-        var entries = ActivityTools.MergeEntries(stepsJson, caloriesJson, activeMinutesJson);
+        var entries = ActivityTools.MergeEntries(stepsJson, caloriesJson, activeMinutesJson, distanceJson, activeZoneMinutesJson);
 
         Assert.That(entries, Has.Count.EqualTo(2));
-        Assert.That(entries[0], Is.EqualTo(new ActivityDay("2026-08-01", 8342, 2450.5, 45)));
-        Assert.That(entries[1], Is.EqualTo(new ActivityDay("2026-08-02", 10501, 2680.0, null)));
+        Assert.That(entries[0], Is.EqualTo(new ActivityDay("2026-08-01", 8342, 2450.5, 45, 6.2, 35)));
+        Assert.That(entries[1], Is.EqualTo(new ActivityDay("2026-08-02", 10501, 2680.0, null, null, null)));
     }
 
     [Test]
     public void MergeEntries_ReturnsEmptyList_WhenAllInputsEmpty()
     {
-        var entries = ActivityTools.MergeEntries("{}", "{}", "{}");
+        var entries = ActivityTools.MergeEntries("{}", "{}", "{}", "{}", "{}");
 
         Assert.That(entries, Is.Empty);
     }
