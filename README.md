@@ -2,6 +2,8 @@
 
 A .NET-based Model Context Protocol (MCP) server for the [Google Health API](https://developers.google.com/health) (Fitbit and Pixel Watch data, including weight logged by a Fitbit Aria scale).
 
+**This is an independent, community-built project - not an official Fitbit, Google, or Google Health product.** It is not affiliated with, endorsed by, or supported by Google or Fitbit. It works against the public Google Health API using your own OAuth client credentials, registered separately in your own Google Cloud project. "Fitbit" and "Google Health" are trademarks of their respective owners, used here only to describe API compatibility.
+
 ## Status
 
 Working prototype. `get_weight_history` is verified end to end against a real Google Health account. Compared against [fatsecret-mcp](../fatsecret-mcp) for a real month: most weight entries were missing from FatSecret, and backfilling them failed — not due to a bug here, but because FatSecret's `weight.update` API rejects any date more than 2 days in the past (undocumented, discovered live). **Practical implication**: this can sync weight going forward (run every day or two) but cannot backfill historical gaps — those need manual entry in FatSecret's own app. See [open issues](https://github.com/mregen/fitbit-mcp/issues) for what's left.
