@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <UserSecretsId>7e2f6b3a-4c9d-4b1e-9a8f-3d6c5e1a2f70</UserSecretsId>
   </PropertyGroup>
 
@@ -10,14 +10,30 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>fitbit-mcp</ToolCommandName>
     <PackageId>FitbitMcp</PackageId>
+    <Description>A Model Context Protocol (MCP) server for the Google Health API - query your own Fitbit/Pixel Watch weight, activity, heart rate, and sleep data through an LLM.</Description>
+    <Authors>Martin Regen</Authors>
+    <PackageTags>mcp modelcontextprotocol google-health fitbit health ai llm dotnet-tool</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/mregen/fitbit-mcp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ModelContextProtocol.AspNetCore" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="FitbitMcp.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
