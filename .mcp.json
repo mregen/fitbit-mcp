@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "fitbit-mcp": {
+      "type": "stdio",
+      "command": "dotnet",
+      "args": ["run", "--project", "${CLAUDE_PROJECT_DIR:-.}/src/FitbitMcp", "--no-launch-profile"]
+    }
+  }
+}

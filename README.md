@@ -66,11 +66,15 @@ In HTTP mode the MCP endpoint is at `<url>/mcp` (Streamable HTTP), e.g. `http://
 
 ### 4. Point an MCP client at it
 
-For Claude Code, stdio (default transport):
+**Claude Code**: a project-scoped [`.mcp.json`](.mcp.json) is checked into this repo — open the project in Claude Code and it'll prompt (once) to trust the `fitbit-mcp` server, no manual registration needed.
+
+To register manually instead (or with another MCP client), stdio (default transport):
 
 ```bash
-claude mcp add fitbit-mcp -- dotnet run --project src/FitbitMcp
+claude mcp add fitbit-mcp -- dotnet run --project src/FitbitMcp --no-launch-profile
 ```
+
+`--no-launch-profile` matters here: without it, `dotnet run` prints a "Using launch settings..." preamble to stdout before the app starts, which corrupts the JSON-RPC stream for a strict-parsing client (confirmed live — the first attempt at `.mcp.json` had this bug).
 
 Or HTTP, with the server already running from step 3:
 
@@ -78,7 +82,9 @@ Or HTTP, with the server already running from step 3:
 claude mcp add --transport http fitbit-local-dev http://localhost:5230/mcp
 ```
 
-Then restart or reconnect your Claude Code session — new MCP registrations aren't picked up mid-session — and `get_weight_history` becomes available.
+Then restart or reconnect your Claude Code session — new MCP registrations aren't picked up mid-session — and all four tools become available.
+
+**Note**: credentials aren't in `.mcp.json` at all — they're read from this machine's `dotnet user-secrets` store (see step 1/2 above), so this only works where `auth login` has already been completed. A different machine/environment needs its own OAuth setup first.
 
 ## Install as a .NET tool
 
