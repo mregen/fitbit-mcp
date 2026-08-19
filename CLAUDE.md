@@ -31,16 +31,22 @@ The driving use case: the developer's Fitbit Aria 2 scale syncs weight into Goog
 - **Sync mechanism is deliberately not code**: no bespoke sync tool/pipeline lives in this repo or fatsecret-mcp. The "does it match / fill in gaps" work happens live, in a Claude session with both MCP servers connected, by calling each server's own tools. This keeps the two servers independent (neither holds the other's credentials) and avoids building automation for what turned out to have a hard platform ceiling (FatSecret's 2-day backdate limit) anyway — no amount of in-repo automation would work around that.
 - **Target framework**: `net10.0`, matching fatsecret-mcp. Also packable as a `dotnet tool` (`PackAsTool`), matching fatsecret-mcp.
 - **Deferred**: legacy Fitbit Web API (activity/sleep/heart rate/nutrition) as a second data path (Milestone 2). No abstraction layer (e.g. `IHealthDataProvider`) has been introduced yet — deliberately not built speculatively ahead of a second real implementation to abstract over (see #6).
+- **Cloud multi-tenant deployment**: design sketch only, not implemented — see [docs/cloud-deployment.md](docs/cloud-deployment.md). Covers running an invite-only beta (Google's OAuth "Testing" mode allowlist doubles as the invite mechanism), per-user token storage, and MCP-level bearer auth, while leaving this single-user dev mode untouched. Tracked as the "Cloud multi-tenant service" milestone.
+
+## Status update, 2026-08-19
+
+- **Issue #11 closed**: fetched today's real weight from Google Health (101.4 kg), confirmed it was missing from FatSecret, wrote it via `add_weight_entry`, and re-verified it landed correctly. This is the first confirmed *successful* write — the ongoing (not historical) sync case is now proven end to end. All of Milestone 1 (#1, #2, #3, #11) is closed.
+- Sketched a cloud multi-tenant deployment design (see above) after being asked whether this could be hosted for multiple invited users. Also answered, inline in conversation (not yet in a design doc), whether more Google Health data types (activity/heart-rate, sleep, body-fat, etc.) or write access are reachable — yes to both, via additional scopes, but explicitly deferred as separate future work.
 
 ## Next steps (pick up here)
 
 See GitHub Issues on [mregen/fitbit-mcp](https://github.com/mregen/fitbit-mcp/issues) for the full, current task list.
 
-**Closed this session**: #1 (auth works), #2 (weight data confirmed live), #3 (end-to-end session run, found the 2-day backdate wall).
+**Milestone 1 (Prototype) fully closed**: #1 (auth works), #2 (weight data confirmed live), #3 (end-to-end session run, found the 2-day backdate wall), #11 (confirmed a real write succeeds within FatSecret's window).
 
 **Open**:
-- **#11** (new) — confirm a real `add_weight_entry` write actually succeeds once a weigh-in falls within FatSecret's 2-day window; every attempt so far failed only because the target dates were too old, never actually exercised the success path.
+- **Milestone "Cloud multi-tenant service"** (new) — 4 issues tracking the phased roadmap in `docs/cloud-deployment.md`: token-store abstraction, MCP bearer-auth + OAuth routes, Dockerfile + real deploy (beta goes live here), Google app verification (deferred until the beta shows interest).
 - **#4–#6** — legacy Fitbit Web API phase (activity/sleep/heart rate/nutrition), not started.
-- **#7–#10** — hardening (token persistence design beyond a single dev machine, Dockerfile, more tests, more docs), not started.
+- **#7–#10** — hardening (token persistence design beyond a single dev machine, Dockerfile, more tests, more docs), not started. Note #8 (Dockerfile) and #7 (token persistence) substantially overlap with the new cloud-deployment milestone — worth reconciling/closing as duplicates once that work actually starts, rather than tracking the same thing twice.
 
 **Not tracked as a repo issue, developer action**: manually backfill the historical weight gap (older than 2 days) through FatSecret's own app/website — that path presumably isn't subject to the API-only restriction found in #3.
