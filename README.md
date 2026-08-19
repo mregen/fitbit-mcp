@@ -10,7 +10,12 @@ Working prototype. `get_weight_history` is verified end to end against a real Go
 
 | Tool | Auth needed | Notes |
 |---|---|---|
-| `get_weight_history` | Google OAuth 2.0 | Body-weight entries for a month, normalized to `{ date, weightKg }`; sourced from Google Health (e.g. a Fitbit Aria scale) |
+| `get_weight_history` | Google OAuth 2.0 (`health_metrics_and_measurements.readonly`) | Body-weight entries for a month, normalized to `{ date, weightKg }`; verified live against a real account |
+| `get_activity_summary` | Google OAuth 2.0 (`activity_and_fitness.readonly`) | Daily steps/calories/active minutes for a date range (defaults to last 14 days — Google caps calories/active-minutes queries at 14 days), normalized to `{ date, steps, totalCalories, activeMinutes }`; not yet exercised against a live account |
+| `get_heart_rate_history` | Google OAuth 2.0 (`activity_and_fitness.readonly`) | Daily avg/min/max heart rate for a date range (defaults to last 14 days, same 14-day cap), normalized to `{ date, avgBpm, minBpm, maxBpm }`; not yet exercised against a live account |
+| `get_sleep_history` | Google OAuth 2.0 (`sleep.readonly`) | Sleep sessions for a month, normalized to `{ date, minutesAsleep, minutesAwake, minutesInBed }` (date = wake-up date; capped at 25 sessions per call by Google); not yet exercised against a live account |
+
+**If you authorized before 2026-08-19**, the OAuth scope changed — re-run `auth login` (step 2 below) to pick up `activity_and_fitness.readonly` and `sleep.readonly`. Calling the new tools with an old token fails with a clear `MISSING_OAUTH_SCOPE` error from Google, not a crash.
 
 ## Running locally
 
