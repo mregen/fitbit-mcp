@@ -3,13 +3,13 @@
 [![Build](https://img.shields.io/github/actions/workflow/status/mregen/fitbit-mcp/build.yml?branch=main&label=build)](https://github.com/mregen/fitbit-mcp/actions/workflows/build.yml)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/FitbitMcp?label=downloads)](https://www.nuget.org/packages/FitbitMcp)
 
-A .NET-based Model Context Protocol (MCP) server for the [Google Health API](https://developers.google.com/health), installable as a .NET tool from [nuget.org](https://www.nuget.org/packages/FitbitMcp) — the data a Fitbit tracker or Aria scale ends up in once it syncs through Google.
+A .NET-based Model Context Protocol (MCP) server for the [Google Health API](https://developers.google.com/health), installable as a .NET tool from [nuget.org](https://www.nuget.org/packages/FitbitMcp) — the data a Fitbit tracker or scale ends up in once it syncs through Google.
 
 **This is an independent, community-built project - not an official Fitbit, Google, or Google Health product.** It is not affiliated with, endorsed by, or supported by Google or Fitbit. It works against the public Google Health API using your own OAuth client credentials, registered separately in your own Google Cloud project. "Fitbit" and "Google Health" are trademarks of their respective owners, used here only to describe API compatibility.
 
 ## Purpose
 
-A Fitbit tracker or scale quietly builds up years of weight, activity, heart rate, and sleep data — but it all sits behind Google's own app, disconnected from everything else. This project connects that data to an LLM directly, so you can ask about it in plain language instead of scrolling through graphs, and — the reason this exists in the first place — compare it against other trackers like [FatSecret](https://github.com/mregen/fatsecret-mcp) instead of re-entering the same numbers by hand.
+A Fitbit tracker or scale quietly builds up years of weight, activity, heart rate, and sleep data — but it all sits behind Google's own app, disconnected from everything else. This project connects that data to an LLM directly, so you can ask about it in plain language instead of scrolling through graphs.
 
 A couple of examples of what that looks like once the tools are connected (illustrative - your own numbers will differ):
 
@@ -17,11 +17,9 @@ A couple of examples of what that looks like once the tools are connected (illus
 >
 > **Claude:** This week you averaged 6h 42m asleep per night across 6 nights logged, up from 6h 10m the week before. Wednesday was your most restless night (58 minutes awake); Sunday was your best, at 7h 15m asleep with only 12 minutes awake.
 
-> **You:** Is my Fitbit weight actually making it into FatSecret?
+> **You:** How's my weight trending against body fat this year?
 >
-> **Claude:** Checking both... Google Health has 12 weigh-ins this month from your scale, but only 3 are logged in FatSecret. Want me to add the other 9? One thing to know: FatSecret only accepts entries from the last 2 days, so this only works for recent gaps — anything older would need to be entered by hand in FatSecret's own app.
-
-That second example is a real constraint this project ran into, not a hypothetical — see [Status](#status) below.
+> **Claude:** They're moving together - weight climbed from 97.4kg to a peak of 103.3kg through Q1 into mid-April while body fat rose from 27.8% to 31.4% over the same stretch, then both eased back through Q2. That kind of matched movement points to real recomposition rather than day-to-day water-weight noise.
 
 ## Requirements
 
@@ -40,7 +38,6 @@ Working prototype, verified against a real account.
 | Heart rate | ✅ Working, verified live |
 | Sleep | ✅ Working, verified live - naps and main sleep on the same night aren't distinguished yet ([issue #17](https://github.com/mregen/fitbit-mcp/issues/17)) |
 | Body fat percentage | ✅ Working, verified live |
-| Syncing weight into FatSecret | ⚠️ Works only for recent gaps (last ~2 days) - FatSecret's own API refuses to backdate further, discovered live, not something this project can work around |
 | Legacy Fitbit Web API (as an alternative to Google Health) | ⏳ Not built - Google Health already covers the same data |
 | Hosting for more than one person | ⏳ Design sketch only - see [`docs/cloud-deployment.md`](docs/cloud-deployment.md) |
 

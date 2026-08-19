@@ -12,7 +12,7 @@ namespace FitbitMcp.Tools;
 public class WeightTools(GoogleHealthApi api)
 {
     [McpServerTool(Name = "get_weight_history")]
-    [Description("Get body-weight entries recorded in Google Health (e.g. from a Fitbit Aria scale) for the month " +
+    [Description("Get body-weight entries recorded in Google Health (e.g. from a Fitbit scale) for the month " +
         "containing the given date, normalized to a flat list of { date, weightKg } entries.")]
     public async Task<string> GetWeightHistory(
         [Description("Any date within the target month, yyyy-MM-dd format; defaults to the current month if omitted")] string? date = null,

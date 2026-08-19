@@ -65,9 +65,9 @@ pollutes stdout before the app starts, which corrupts the JSON-RPC channel (conf
 
 ### 4. Point an MCP client at it
 
-A project-scoped [`.mcp.json`](../.mcp.json) is checked into this repo - unlike `fatsecret-mcp`'s
-equivalent file, it needs no secrets embedded (credentials come from `dotnet user-secrets`, not
-env vars, for the source-dev path), so it's safe to commit. Open the project in Claude Code and
+A project-scoped [`.mcp.json`](../.mcp.json) is checked into this repo - it needs no secrets
+embedded (credentials come from `dotnet user-secrets`, not env vars, for the source-dev path), so
+it's safe to commit. Open the project in Claude Code and
 it'll prompt once to trust the server.
 
 To register manually instead:
@@ -128,6 +128,6 @@ PRs/commits since the last tag. The version is the one NBGV computed during `Pac
 from the packed filename (`FitbitMcp.<version>.nupkg`) and passed between jobs via a job
 `output`.
 
-As with `fatsecret-mcp`, this isn't primarily a security gate (the package contains no
+This isn't primarily a security gate (the package contains no
 credentials either way) so much as a "not polished enough yet" one - keep publishing manual-only
 until the tool has had more real-world exercise beyond this project's own testing.

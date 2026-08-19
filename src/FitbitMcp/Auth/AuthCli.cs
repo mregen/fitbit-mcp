@@ -9,7 +9,7 @@ namespace FitbitMcp.Auth;
 
 /// <summary>
 /// One-time interactive helper for completing the Google OAuth 2.0 authorization-code + PKCE flow.
-/// Unlike FatSecret's OAuth1 oob/PIN flow, Google requires a redirect URI, so this runs a short-lived
+/// Google requires a redirect URI rather than an oob/PIN flow, so this runs a short-lived
 /// loopback listener to catch the callback instead of asking the user to paste a code by hand.
 ///
 /// Usage:
