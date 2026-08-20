@@ -90,6 +90,14 @@ Extended the existing tool rather than adding a new one, since both fields are d
 - **Not yet in a published package**: same as body-fat - only exists in source until the next nuget.org release.
 - **Still on the table, not built this pass**: floors climbed, active energy burned (distinct from total calories), sedentary period, calories-in-heart-rate-zone, and - a structurally bigger piece - individual exercise/workout sessions (Google Health's `exercise` data type, session-shaped like sleep rather than rollup-shaped, so it'd need a new `ListDataPointsAsync`-based tool rather than another field on this one).
 
+## Status update, 2026-08-20 - closed #17: nap vs. main sleep in `get_sleep_history`
+
+- **Fix**: confirmed via the live discovery doc that `SleepMetadata.mainSleep`/`SleepMetadata.nap` (both `readOnly` booleans under `sleep.metadata`) are real fields, not a guess. `SleepTools.ParseEntries` now reads `sleep.metadata` and adds `IsMainSleep` (`bool?`) to each `SleepNight`, preferring `metadata.mainSleep` and falling back to `!metadata.nap` when `mainSleep` itself is absent (it's only reliably populated once a stages-processing pass has run); both missing leaves `IsMainSleep` `null` rather than guessing.
+- **`get_sleep_history` now defaults to main-sleep only**: naps are filtered out unless the new `includeNaps` parameter is passed, so the common case (one entry per date) no longer needs client-side disambiguation. Entries with `IsMainSleep: null` (unknown) are kept rather than silently dropped, since the metadata isn't guaranteed present on every account/entry.
+- 4 new tests (19 total): `SleepToolsTests` gained cases for reading `metadata.mainSleep`/`metadata.nap`, the `mainSleep`-absent fallback, and the existing two tests updated for the new `IsMainSleep` record field.
+- **Verified live** via the standalone stdio script against the source build (same approach as the body-fat/distance additions): re-ran against August's real data and confirmed the exact case that motivated #17 — 2026-08-15's 58-minute nap now returns `IsMainSleep: false` and is excluded by default, while the 376-minute main sleep that same date returns `IsMainSleep: true` and remains; passing `includeNaps: true` restores both, matching the tool description.
+- **Not yet in a published package**: same as the other recent additions — only exists in source until the next nuget.org release.
+
 ## Next steps (pick up here)
 
 See GitHub Issues on [mregen/fitbit-mcp](https://github.com/mregen/fitbit-mcp/issues) for the full, current task list.

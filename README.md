@@ -59,7 +59,7 @@ that's needed first and the reasoning behind deferring hosted/multi-user use.
 | `get_weight_history` | `health_metrics_and_measurements.readonly` | Body-weight entries for a month |
 | `get_activity_summary` | `activity_and_fitness.readonly` | Daily steps, calories, active minutes, distance, and active zone minutes for a date range (last 14 days by default) |
 | `get_heart_rate_history` | `activity_and_fitness.readonly` | Daily average/min/max heart rate for a date range (last 14 days by default) |
-| `get_sleep_history` | `sleep.readonly` | Sleep sessions for a month - time asleep, awake, and in bed |
+| `get_sleep_history` | `sleep.readonly` | Sleep sessions for a month - time asleep, awake, and in bed. Returns each day's main sleep only by default; pass `includeNaps` to also get naps |
 | `get_body_fat_history` | `health_metrics_and_measurements.readonly` | Body-fat percentage entries for a month (same scope as weight) |
 
 ## Install
