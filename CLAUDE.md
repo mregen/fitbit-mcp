@@ -98,6 +98,16 @@ Extended the existing tool rather than adding a new one, since both fields are d
 - **Verified live** via the standalone stdio script against the source build (same approach as the body-fat/distance additions): re-ran against August's real data and confirmed the exact case that motivated #17 — 2026-08-15's 58-minute nap now returns `IsMainSleep: false` and is excluded by default, while the 376-minute main sleep that same date returns `IsMainSleep: true` and remains; passing `includeNaps: true` restores both, matching the tool description.
 - **Not yet in a published package**: same as the other recent additions — only exists in source until the next nuget.org release.
 
+## Status update, 2026-08-20 (continued) - floors, active energy, sedentary minutes, calories-in-heart-rate-zone added to `get_activity_summary`
+
+The four fields explicitly named as "still on the table" in the previous activity-summary pass, all daily-rollup shaped like steps/calories/active-minutes:
+
+- **Four more parallel rollup calls**, confirmed against the live discovery doc (not guessed): `floors` (`FloorsRollupValue.countSum`, same shape as steps), `active-energy-burned` (`ActiveEnergyBurnedRollupValue.kcalSum`, same shape as total-calories), `sedentary-period` (`SedentaryPeriodRollupValue.durationSum` - a protobuf `google-duration` string like `"3630s"`, parsed and converted to minutes, a new value shape not seen in this codebase before), and `calories-in-heart-rate-zone` (`CaloriesInHeartRateZoneRollupValue.caloriesInHeartRateZones[].kcal`, a per-zone breakdown summed into one daily total - same "flatten the breakdown" approach already used for active-minutes/active-zone-minutes). All four fall under the already-granted `activity_and_fitness.readonly` scope - no re-auth needed. `calories-in-heart-rate-zone` shares the same 14-day rollup-range cap as heart-rate/active-minutes/total-calories (confirmed in the discovery doc's range description), which `get_activity_summary` already defaults to.
+- `ActivityTools.MergeEntries` now takes nine JSON payloads instead of five and the `ActivityDay` record gained `FloorsClimbed`/`ActiveEnergyBurnedKcal`/`SedentaryMinutes`/`CaloriesInHeartRateZoneKcal` fields; `GetActivitySummary` fires all nine rollup calls with `Task.WhenAll` as before.
+- 2 tests updated/added (20 total): the existing merge test now passes empty JSON for the four new inputs and asserts the wider `ActivityDay` shape, plus a new test covering all four new fields together.
+- **Verified live** via the standalone stdio script (same approach as prior additions): an 8-day real pull returned plausible values across the board - floors 3-30/day, active energy 340-1200 kcal/day, sedentary 355-678 min/day, calories-in-heart-rate-zone tracking close to (but distinct from) total calories each day. One day (08-17) came back with `FloorsClimbed: null` - a genuine missing data point for that day/type, handled the same way existing fields already handle gaps (nullable field, no error).
+- **Not yet in a published package**: same as recent prior additions - only exists in source until the next nuget.org release.
+
 ## Next steps (pick up here)
 
 See GitHub Issues on [mregen/fitbit-mcp](https://github.com/mregen/fitbit-mcp/issues) for the full, current task list.
