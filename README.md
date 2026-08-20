@@ -61,6 +61,7 @@ that's needed first and the reasoning behind deferring hosted/multi-user use.
 | `get_heart_rate_history` | `activity_and_fitness.readonly` | Daily average/min/max heart rate for a date range (last 14 days by default) |
 | `get_sleep_history` | `sleep.readonly` | Sleep sessions for a month - time asleep, awake, and in bed. Returns each day's main sleep only by default; pass `includeNaps` to also get naps |
 | `get_body_fat_history` | `health_metrics_and_measurements.readonly` | Body-fat percentage entries for a month (same scope as weight) |
+| `get_exercise_history` | `activity_and_fitness.readonly` | Individual exercise/workout sessions for a month - type, duration, distance, calories, heart rate, pace, elevation gain, steps. No raw GPS route data - Google Health's exercise data type only exposes whether a session had GPS tracking (`hasGps`), not the route itself |
 
 ## Install
 
