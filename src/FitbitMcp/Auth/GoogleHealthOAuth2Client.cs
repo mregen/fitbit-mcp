@@ -18,7 +18,8 @@ public sealed class GoogleHealthOAuth2Client(HttpClient httpClient, string clien
     public const string Scope =
         "https://www.googleapis.com/auth/googlehealth.health_metrics_and_measurements.readonly " +
         "https://www.googleapis.com/auth/googlehealth.activity_and_fitness.readonly " +
-        "https://www.googleapis.com/auth/googlehealth.sleep.readonly";
+        "https://www.googleapis.com/auth/googlehealth.sleep.readonly " +
+        "https://www.googleapis.com/auth/googlehealth.location.readonly";
 
     public string BuildAuthorizeUrl(string state, string codeChallenge)
     {

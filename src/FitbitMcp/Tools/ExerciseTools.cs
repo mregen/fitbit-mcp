@@ -13,12 +13,14 @@ public class ExerciseTools(GoogleHealthApi api)
 {
     [McpServerTool(Name = "get_exercise_history")]
     [Description("Get individual exercise/workout sessions recorded in Google Health for the month containing the " +
-        "given date (e.g. a run, bike ride, or gym session), normalized to a flat list of { date, displayName, " +
-        "exerciseType, durationMinutes, distanceKm, caloriesKcal, averageHeartRateBpm, averagePaceMinPerKm, " +
-        "elevationGainMeters, steps, hasGps } entries - date is the civil date the session started. This does not " +
-        "include raw GPS route/waypoint data - only whether the session had GPS tracking (hasGps) - since Google " +
-        "Health's exercise data type carries summary metrics, not routes. Google Health caps this at 25 sessions " +
-        "per call, most recent first, so a month with more sessions than that returns only the most recent 25.")]
+        "given date (e.g. a run, bike ride, or gym session), normalized to a flat list of { date, exerciseId, " +
+        "displayName, exerciseType, durationMinutes, distanceKm, caloriesKcal, averageHeartRateBpm, " +
+        "averagePaceMinPerKm, elevationGainMeters, steps, hasGps } entries - date is the civil date the session " +
+        "started. This does not include raw GPS route/waypoint data - only whether the session had GPS tracking " +
+        "(hasGps) - since Google Health's exercise data type carries summary metrics, not routes; for a session " +
+        "with hasGps true, pass its exerciseId to get_exercise_gps_route to get the actual route. Google Health " +
+        "caps this at 25 sessions per call, most recent first, so a month with more sessions than that returns " +
+        "only the most recent 25.")]
     public async Task<string> GetExerciseHistory(
         [Description("Any date within the target month, yyyy-MM-dd format; defaults to the current month if omitted")] string? date = null,
         CancellationToken cancellationToken = default)
@@ -65,6 +67,9 @@ public class ExerciseTools(GoogleHealthApi api)
             }
 
             var isoDate = DateOnly.FromDateTime(startTime.UtcDateTime).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            var exerciseId = dataPoint.TryGetProperty("name", out var nameElement)
+                ? nameElement.GetString()?.Split('/').LastOrDefault()
+                : null;
             var displayName = exercise.TryGetProperty("displayName", out var displayNameElement) ? displayNameElement.GetString() : null;
             var exerciseType = exercise.TryGetProperty("exerciseType", out var exerciseTypeElement) ? exerciseTypeElement.GetString() : null;
 
@@ -123,7 +128,7 @@ public class ExerciseTools(GoogleHealthApi api)
                     : null;
 
             entries.Add(new ExerciseSession(
-                isoDate, displayName, exerciseType, durationMinutes, distanceKm, caloriesKcal,
+                isoDate, exerciseId, displayName, exerciseType, durationMinutes, distanceKm, caloriesKcal,
                 averageHeartRateBpm, averagePaceMinPerKm, elevationGainMeters, steps, hasGps));
         }
 
@@ -161,6 +166,7 @@ public class ExerciseTools(GoogleHealthApi api)
 
 public sealed record ExerciseSession(
     string Date,
+    string? ExerciseId,
     string? DisplayName,
     string? ExerciseType,
     double? DurationMinutes,

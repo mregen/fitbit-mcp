@@ -14,6 +14,7 @@ public class ExerciseToolsTests
         {
           "dataPoints": [
             {
+              "name": "users/me/dataTypes/exercise/dataPoints/2026443605080188808",
               "exercise": {
                 "displayName": "Running",
                 "exerciseType": "RUNNING",
@@ -39,6 +40,7 @@ public class ExerciseToolsTests
         Assert.That(entries, Has.Count.EqualTo(1));
         var entry = entries[0];
         Assert.That(entry.Date, Is.EqualTo("2026-08-15"));
+        Assert.That(entry.ExerciseId, Is.EqualTo("2026443605080188808"));
         Assert.That(entry.DisplayName, Is.EqualTo("Running"));
         Assert.That(entry.ExerciseType, Is.EqualTo("RUNNING"));
         Assert.That(entry.DurationMinutes, Is.EqualTo(45.0));

@@ -50,6 +50,20 @@ public sealed class GoogleHealthApi(HttpClient httpClient, GoogleHealthOAuth2Cli
         return SendAsync(HttpMethod.Get, path, body: null, cancellationToken);
     }
 
+    /// <summary>
+    /// Exports one exercise data point's GPS route as raw TCX (Training Center XML) - confirmed via the live
+    /// discovery doc's dataPoints.exportExerciseTcx method, the only place Google Health exposes GPS
+    /// trackpoints (the `exercise` data type itself only carries a hasGps boolean, no coordinates). Requires
+    /// `alt=media` to get the raw file rather than a JSON-wrapped ExportExerciseTcxResponse, and requires the
+    /// `location.readonly` scope in addition to `activity_and_fitness.readonly` - a session authorized before
+    /// that scope was added will get a 403 MISSING_OAUTH_SCOPE until re-authorized.
+    /// </summary>
+    public Task<string> ExportExerciseTcxAsync(string exerciseDataPointId, bool partialData = false, CancellationToken cancellationToken = default)
+    {
+        var path = $"users/me/dataTypes/exercise/dataPoints/{exerciseDataPointId}:exportExerciseTcx?alt=media&partialData={(partialData ? "true" : "false")}";
+        return SendAsync(HttpMethod.Get, path, body: null, cancellationToken);
+    }
+
     private async Task<string> SendAsync(HttpMethod method, string path, object? body, CancellationToken cancellationToken)
     {
         var tokens = await GetValidTokensAsync(cancellationToken);

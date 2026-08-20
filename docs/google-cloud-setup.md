@@ -16,10 +16,11 @@ Any Google Cloud project works - a dedicated one keeps things tidy, but it's not
 
 - **User type**: External.
 - **Publishing status**: leave it at **Testing** for personal use or a small invite-only group - see [Token lifetimes](#token-lifetimes-and-why-testing-status-matters) below for what this trades off.
-- **Data access → Add or remove scopes**: search for and add all three scopes this project uses:
+- **Data access → Add or remove scopes**: search for and add all four scopes this project uses:
   - `.../auth/googlehealth.health_metrics_and_measurements.readonly`
   - `.../auth/googlehealth.activity_and_fitness.readonly`
   - `.../auth/googlehealth.sleep.readonly`
+  - `.../auth/googlehealth.location.readonly` (only needed for `get_exercise_gps_route` - Google's own description is "See exercise GPS location data in Google Health", scoped to exercise routes rather than general location history)
 
   These are sensitive scopes - Google requires them explicitly added here before any OAuth client under this project can request them, even in Testing mode.
 - **Test users**: add your own Google account (and, later, anyone you invite - see [`docs/cloud-deployment.md`](cloud-deployment.md)). While in Testing status, **only listed test users can complete authorization at all** - capped at 100.

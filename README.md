@@ -34,10 +34,12 @@ Working prototype, verified against a real account.
 | Feature | Status |
 |---|---|
 | Weight history | ✅ Working, verified live |
-| Activity (steps, calories, active minutes, distance, active zone minutes) | ✅ Working, verified live |
+| Activity (steps, calories, active minutes, distance, active zone minutes, floors, active energy, sedentary minutes, calories in heart-rate zones) | ✅ Working, verified live |
 | Heart rate | ✅ Working, verified live |
-| Sleep | ✅ Working, verified live - naps and main sleep on the same night aren't distinguished yet ([issue #17](https://github.com/mregen/fitbit-mcp/issues/17)) |
+| Sleep | ✅ Working, verified live - distinguishes each night's main sleep from naps |
 | Body fat percentage | ✅ Working, verified live |
+| Exercise/workout sessions (type, duration, distance, calories, pace, elevation, steps) | ✅ Working, verified live |
+| Exercise GPS route | ✅ Working, verified live - needs the `location` scope, so existing installs must re-run `auth login` once after upgrading |
 | Legacy Fitbit Web API (as an alternative to Google Health) | ⏳ Not built - Google Health already covers the same data |
 | Hosting for more than one person | ⏳ Design sketch only - see [`docs/cloud-deployment.md`](docs/cloud-deployment.md) |
 
@@ -61,7 +63,8 @@ that's needed first and the reasoning behind deferring hosted/multi-user use.
 | `get_heart_rate_history` | `activity_and_fitness.readonly` | Daily average/min/max heart rate for a date range (last 14 days by default) |
 | `get_sleep_history` | `sleep.readonly` | Sleep sessions for a month - time asleep, awake, and in bed. Returns each day's main sleep only by default; pass `includeNaps` to also get naps |
 | `get_body_fat_history` | `health_metrics_and_measurements.readonly` | Body-fat percentage entries for a month (same scope as weight) |
-| `get_exercise_history` | `activity_and_fitness.readonly` | Individual exercise/workout sessions for a month - type, duration, distance, calories, heart rate, pace, elevation gain, steps. No raw GPS route data - Google Health's exercise data type only exposes whether a session had GPS tracking (`hasGps`), not the route itself |
+| `get_exercise_history` | `activity_and_fitness.readonly` | Individual exercise/workout sessions for a month - type, duration, distance, calories, heart rate, pace, elevation gain, steps, and an `exerciseId`/`hasGps` for sessions with a route |
+| `get_exercise_gps_route` | `activity_and_fitness.readonly` + `location.readonly` | The actual GPS route for one exercise session (from `get_exercise_history`'s `exerciseId`) - latitude/longitude/altitude/heart rate per trackpoint, downsampled by default |
 
 ## Install
 
